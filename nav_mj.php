@@ -10,7 +10,7 @@
             <a class="nav-link 
             <?php
             if (isset($_GET["course_category"]) && $category_id == $course_category["id"]) echo "active";
-            ?>" href="course-list.php?category=<?= $course_category["id"] ?>"><?= $course_category["category_name"] ?></a>
+            ?>" href="course-list.php?category=<?= $course_category["id"] ?>"><?= $course_category["name"] ?></a>
         </li>
     <?php endforeach; ?>
 </ul>

@@ -58,6 +58,16 @@
                         <input type="text" class="form-control" id="price" name="price" required>
                     </div>
                     <div class="mb-3">
+                        <label for="course_category_id" class="form-label">*類別</label>
+                        <select id="course_category_id" name="course_category_id" class="form-select" required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="on_datetime" class="form-label">*上架時間</label>
                         <input type="date" class="form-control" id="on_datetime" name="on_datetime" required>
                     </div>
