@@ -13,6 +13,7 @@ $course_category_id = $_POST["course_category_id"];
 $on_datetime = $_POST["on_datetime"];
 $off_datetime = $_POST["off_datetime"];
 $file = $_FILES["file"];
+$image= $_FILES["image"];
 $now = date('Y-m-d H:i:s');
 
 // 檢查課程是否已存在
@@ -24,7 +25,7 @@ if ($resultCheck->num_rows > 0) {
 }
 
 // 使用預處理語句準備 SQL，防止 SQL 注入
-$sql = "INSERT INTO course (course_name, price, course_category_id, on_datetime, off_datetime, file, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+$sql = "INSERT INTO course (course_name, price, course_category_id, on_datetime, off_datetime, file, image, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
@@ -33,7 +34,7 @@ if (!$stmt) {
 }
 
 // 綁定參數
-$stmt->bind_param("sssssss", $course_name, $price, $course_category_id, $on_datetime, $off_datetime, $file['name'], $now);
+$stmt->bind_param("sssssss", $course_name, $price, $course_category_id, $on_datetime, $off_datetime, $file['name'], $image['name'], $now);
 
 // 執行語句
 if ($stmt->execute()) {
