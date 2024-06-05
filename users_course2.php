@@ -13,100 +13,72 @@ foreach ($cateRows as $cate) {
     $categoryArr[$cate["id"]] = $cate["category_name"];
 }
 
+// 初始變數設置
+
+$pageTitle = "課程列表";
+$perPage = 5;
 $on_datetime = isset($_GET["on_datetime"]) ? $_GET["on_datetime"] : '';
 $off_datetime = isset($_GET["off_datetime"]) ? $_GET["off_datetime"] : '';
-$minValue = isset($_GET["min"]) ? $_GET["min"] : 0;
-$maxValue = isset($_GET["max"]) ? $_GET["max"] : 99999;
+$minValue = isset($_GET["minValue"]) && $_GET["minValue"] !== '0' ? $_GET["minValue"] : '';
+$maxValue = isset($_GET["maxValue"]) && $_GET["maxValue"] !== '0' ? $_GET["maxValue"] : '';
+$search = isset($_GET["search"]) ? $_GET["search"] : '';
+$page = isset($_GET["page"]) ? (int)$_GET["page"] : 1;
+$order = isset($_GET["order"]) ? (int)$_GET["order"] : 1;
+$firstItem = ($page - 1) * $perPage;
+$allCourseCount = 0;
 
-$whereClauses = ["valid = 1"];
-if ($on_datetime) {
-    $whereClauses[] = "on_datetime >= '$on_datetime'";
+// 建立 WHERE 子句
+
+$whereClause = "WHERE valid = 1";
+if (!empty($on_datetime) && !empty($off_datetime)) {
+    $whereClause .= " AND on_datetime >= '$on_datetime' AND off_datetime <= '$off_datetime'";
 }
-if ($off_datetime) {
-    $whereClauses[] = "off_datetime <= '$off_datetime'";
+if (!empty($minValue)) {
+    $whereClause .= " AND price >= $minValue";
 }
-if ($minValue !== '') {
-    $whereClauses[] = "price >= $minValue";
+if (!empty($maxValue)) {
+    $whereClause .= " AND price <= $maxValue";
 }
-if ($maxValue !== '') {
-    $whereClauses[] = "price <= $maxValue";
-}
-
-$whereClause = implode(" AND ", $whereClauses);
-
-if (isset($_GET["search"])) {
-    $search = $_GET["search"];
-    $sql = "SELECT * FROM course WHERE course_name LIKE '%$search%' AND $whereClause";
-    $pageTitle = "$search 的搜尋結果";
-}
-
-else if ((isset($_GET["min"]) && $_GET["min"] !== '') || (isset($_GET["max"]) && $_GET["max"] !== '') || (isset($_GET["on_datetime"]) && $_GET["on_datetime"] !== '') || (isset($_GET["off_datetime"]) && $_GET["off_datetime"] !== '')) {
-    $minValue = isset($_GET["min"]) ? $_GET["min"] : 0;
-    $maxValue = isset($_GET["max"]) ? $_GET["max"] : 99999;
-    $on_datetime = isset($_GET["on_datetime"]) ? $_GET["on_datetime"] : '';
-    $off_datetime = isset($_GET["off_datetime"]) ? $_GET["off_datetime"] : '';
-
-    $whereClauses = ["valid = 1"];
-
-    if ($minValue !== '' && $maxValue !== '') {
-        $whereClauses[] = "price >= $minValue AND price <= $maxValue";
-    }
-
-    if ($on_datetime !== '' && $off_datetime !== '') {
-        $whereClauses[] = "on_datetime >= '$on_datetime' AND off_datetime <= '$off_datetime'";
-    }
-
-    $whereClause = implode(" AND ", $whereClauses);
-
-    $sql = "SELECT * FROM course 
-            WHERE $whereClause
-            ORDER BY id ASC";
-
-    if ($minValue !== '' && $maxValue !== '' && $on_datetime !== '' && $off_datetime !== '') {
-        $pageTitle = "價格在 $minValue ~ $maxValue 元，日期在 $on_datetime ~ $off_datetime 之間的搜尋結果";
-    } else if ($minValue !== '' && $maxValue !== '') {
-        $pageTitle = "價格在 $minValue ~ $maxValue 元的搜尋結果";
-    } else if ($on_datetime !== '' && $off_datetime !== '') {
-        $pageTitle = "日期在 $on_datetime ~ $off_datetime 之間的搜尋結果";
-    }
+if (!empty($search)) {
+    $whereClause .= " AND (course_name LIKE '%$search%')";
 }
 
-else if (isset($_GET["page"]) && isset($_GET["order"])) {
-    $page = $_GET["page"];
-    $perPage = 5;
-    $firstItem = ($page - 1) * $perPage;
-    $pageCount = ceil($allCourseCount / $perPage);
+// 設置排序選項
 
-    $order = $_GET["order"];
-    switch ($order) {
-        case 1:
-            $orderClause = "ORDER BY id ASC";
-            break;
-        case 2:
-            $orderClause = "ORDER BY id DESC";
-            break;
-        case 3:
-            $orderClause = "ORDER BY on_datetime ASC";
-            break;
-        case 4:
-            $orderClause = "ORDER BY on_datetime DESC";
-            break;
-    }
+$orderOptions = [
+    1 => "ORDER BY id DESC",
+    2 => "ORDER BY id ASC",
+    3 => "ORDER BY course_name DESC",
+    4 => "ORDER BY course_name ASC",
+    5 => "ORDER BY price DESC",
+    6 => "ORDER BY price ASC",
+    7 => "ORDER BY on_datetime DESC",
+    8 => "ORDER BY on_datetime ASC",
+    9 => "ORDER BY off_datetime DESC",
+    10 => "ORDER BY off_datetime ASC",
+];
 
-    $sql = "SELECT * FROM course WHERE $whereClause $orderClause LIMIT $firstItem, $perPage";
-    $pageTitle = "課程列表， 第 $page 頁";
-} else {
-    $sql = "SELECT * FROM course WHERE $whereClause";
-    $pageTitle = "課程列表";
-    header("location: users_course2.php?page=1&order=1");
-}
+$orderClause = $orderOptions[$order] ?? $orderOptions[1];
+
+// 建立查詢語句
+
+$sql = "SELECT * FROM course $whereClause $orderClause LIMIT $firstItem, $perPage";
+
+
+
+// 獲取查詢結果
 
 $result = $conn->query($sql);
 $rows = $result->fetch_all(MYSQLI_ASSOC);
 $courseCount = $result->num_rows;
-if (isset($_GET["page"])) {
-    $userCourseCount = $allCourseCount;
-}
+
+// 獲取符合條件的總數量以進行分頁
+
+$totalSql = "SELECT COUNT(*) AS total FROM course $whereClause";
+$totalResult = $conn->query($totalSql);
+$totalRow = $totalResult->fetch_assoc();
+$allCourseCount = $totalRow['total'];
+$pageCount = ceil($allCourseCount / $perPage);
 
 ?>
 
@@ -127,41 +99,47 @@ if (isset($_GET["page"])) {
 
 <body>
     <div class="container my-4">
-
         <?php include("nav_mj.php") ?>
-
+        <div class="d-flex justify-content-center align-items-center my-3">
+            <h1 class="text-success fw-bold"><?= $pageTitle ?></h1>
+        </div>
         <div class="d-flex justify-content-between align-items-center my-3">
             <div>
-            <?php if (isset($_GET["search"]) || isset($_GET["on_datetime"]) || isset($_GET["off_datetime"]) || isset($_GET["max"]) || isset($_GET["min"])) : ?>
-    <a class="btn btn-primary" href="users_course2.php">back <i class="fa-solid fa-arrow-left"></i></a>
-<?php endif; ?>
+                <?php if (isset($_GET["search"]) || isset($_GET["on_datetime"]) || isset($_GET["off_datetime"]) || isset($_GET["minValue"]) || isset($_GET["maxValue"])) : ?>
+                    <a class="btn btn-primary" href="users_course2.php"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+                <?php endif; ?>
             </div>
-            <h1 class="h3 text-success"><?= $pageTitle ?></h1>
+
             <a class="btn btn-success" href="course-upload2.php"><i class="fa-solid fa-file-circle-plus"></i> 新增課程</a>
         </div>
 
         <div class="card mb-3">
             <div class="card-body">
-                <form action="" method="get" class="row g-3">
-                    <div class="col-md-3">
-                        <label for="on_datetime" class="form-label fw-semibold">開始時間</label>
-                        <input type="date" id="on_datetime" name="on_datetime" class="form-control">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="off_datetime" class="form-label fw-semibold">結束時間</label>
-                        <input type="date" id="off_datetime" name="off_datetime" class="form-control">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="min" class="form-label">最低價格</label>
-                        <input type="number" id="min" name="min" min="0" class="form-control">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="max" class="form-label">最高價格</label>
-                        <input type="number" id="max" name="max" min="0" class="form-control">
-                    </div>
-                    <div class="col-md-12 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 篩選</button>
-                    </div>
+                <form action="" method="get" class="">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <label for="on_datetime" class="form-label fw-semibold w-50">上架日期</label>
+                            <input type="date" id="on_datetime" name="on_datetime" class="form-control" value="<?= $on_datetime ?>">
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <label for="off_datetime" class="form-label fw-semibold  w-50">下架日期</label>
+                            <input type="date" id="off_datetime" name="off_datetime" class="form-control" value="<?= $off_datetime ?>">
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <label for="minValue" class="form-label fw-semibold  w-50">最低價格</label>
+                            <input type="number" id="minValue" placeholder="請輸入查詢價格。" name="minValue" class="form-control " min="0" value="<?= $minValue ?>">
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <label for="maxValue" class="form-label fw-semibold  w-50">最高價格</label>
+                            <input type="number" min="0" id="maxValue" placeholder="請輸入查詢價格。" name="maxValue" class="form-control" value="<?= $maxValue ?>">
+                        </div>
+
+                        <div class="">
+                            <input type="hidden" name="search" value="<?= $search ?>">
+                            <input type="hidden" name="page" value="1">
+                            <input type="hidden" name="order" value="<?= $order ?>">
+                            <button type="submit" class="btn btn-primary "><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
                 </form>
             </div>
         </div>
@@ -172,7 +150,13 @@ if (isset($_GET["page"])) {
                     <div class="col-md-12">
                         <label for="search" class="form-label">搜尋課程</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search..." name="search">
+                            <input type="text" class="form-control" placeholder="請輸入要查詢的課程名稱。" name="search" value="<?= $search ?>">
+                            <input type="hidden" name="off_datetime" value="<?= $off_datetime ?>">
+                            <input type="hidden" name="on_datetime" value="<?= $on_datetime ?>">
+                            <input type="hidden" name="minValue" value="<?= $minValue ?>">
+                            <input type="hidden" name="maxValue" value="<?= $maxValue ?>">
+                            <input type="hidden" name="page" value="1">
+                            <input type="hidden" name="order" value="<?= $order ?>">
                             <button class="btn btn-primary" type="submit"><i class="fa-solid fa-magnifying-glass"></i> 搜尋</button>
                         </div>
                     </div>
@@ -181,29 +165,22 @@ if (isset($_GET["page"])) {
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>共 <?= $allCourseCount ?> 門課程</div>
-            <?php if (isset($_GET["page"])) : ?>
-                <div class="btn-group">
-                    <a href="?page=<?= $page ?>&order=1" class="btn btn-outline-primary <?php if ($order == 1) echo "active"; ?>">ID <i class="fa-solid fa-arrow-down-short-wide"></i></a>
-                    <a href="?page=<?= $page ?>&order=2" class="btn btn-outline-primary <?php if ($order == 2) echo "active"; ?>">ID <i class="fa-solid fa-arrow-down-wide-short"></i></a>
-                    <a href="?page=<?= $page ?>&order=3" class="btn btn-outline-primary <?php if ($order == 3) echo "active"; ?>">上架日期 <i class="fa-solid fa-arrow-down-short-wide"></i></a>
-                    <a href="?page=<?= $page ?>&order=4" class="btn btn-outline-primary <?php if ($order == 4) echo "active"; ?>">上架日期 <i class="fa-solid fa-arrow-down-wide-short"></i></a>
-                </div>
-            <?php endif; ?>
+            <div class="ps-3"><?= "共 $allCourseCount 堂課程" ?></div>
+
         </div>
 
-        <?php if ($result->num_rows > 0) : ?>
+        <?php if ($courseCount  > 0) : ?>
             <div class="table-responsive">
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered table-hover text-center">
                     <thead class="table-dark">
                         <tr>
-                            <th class="text-end">ID</th>
-                            <th>課程名稱</th>
-                            <th>分類ID</th>
+                            <th class="text-end">ID <a href="?page=<?= $page ?>&order=<?= ($order == 1) ? 2 : 1 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
+                            <th>課程名稱 <a href="?page=<?= $page ?>&order=<?= ($order == 3) ? 4 : 3 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
+                            <th>分類ID </th>
                             <th>圖片</th>
-                            <th class="text-end">價格</th>
-                            <th class="text-end">上架日期</th>
-                            <th class="text-end">下架日期</th>
+                            <th class="text-end">價格 <a href="?page=<?= $page ?>&order=<?= ($order == 5) ? 6 : 5 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
+                            <th class="text-end">上架日期 <a href="?page=<?= $page ?>&order=<?= ($order == 7) ? 8 : 7 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
+                            <th class="text-end">下架日期 <a href="?page=<?= $page ?>&order=<?= ($order == 9) ? 10 : 9 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -227,26 +204,36 @@ if (isset($_GET["page"])) {
                     </tbody>
                 </table>
             </div>
-        <?php else : ?>
-            <p class="text-center">無符合條件的課程。</p>
-        <?php endif; ?>
 
-        <?php if (isset($_GET["page"])) : ?>
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    <?php for ($i = 1; $i <= $pageCount; $i++) : ?>
-                        <li class="page-item <?php if ($i == $page) echo "active"; ?>">
-                            <a class="page-link" href="?page=<?= $i ?>&order=<?= $order ?>"><?= $i ?></a>
-                        </li>
-                    <?php endfor; ?>
-                </ul>
-            </nav>
-        <?php endif; ?>
+            <div class="d-flex justify-content-center">
+                <?php if ($pageCount >= 1) : ?>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <?php for ($i = 1; $i <= $pageCount; $i++) : ?>
+                                <li class="page-item <?php if ($i == $page) echo "active"; ?>">
+                                    <a class="page-link" href="?page=<?= $i ?>&order=<?= $order ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>"><?= $i ?></a>
+                                </li>
+                            <?php endfor; ?>
+                        </ul>
+                    </nav>
+                <?php endif; ?>
+            <?php else : ?>
+                <p class="text-center">無符合條件的課程。</p>
+            <?php endif; ?>
 
-    </div>
+            </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+            <!-- Bootstrap JS -->
+            <script>
+                // 防止日曆選之前或之後
+                document.getElementById("on_datetime").addEventListener("change", function() {
+                    document.getElementById("off_datetime").min = this.value;
+                });
+                document.getElementById("off_datetime").addEventListener("change", function() {
+                    document.getElementById("on_datetime").max = this.value;
+                });
+            </script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
