@@ -60,9 +60,19 @@ $orderOptions = [
 
 $orderClause = $orderOptions[$order] ?? $orderOptions[1];
 
+
+if (isset($_GET["category"])) {
+    $category_id = $_GET["category"];
+    $categoryClause = "AND course.course_category_id = $category_id";
+
+    $pageTitle = $categoryArr[$category_id] . "課程列表";
+} else {
+    $categoryClause = "";
+}
 // 建立查詢語句
 
-$sql = "SELECT * FROM course $whereClause $orderClause LIMIT $firstItem, $perPage";
+$sql = "SELECT course.*, course_category.name AS category_name FROM course 
+    JOIN course_category ON course.course_category_id = course_category.id  $whereClause $categoryClause $orderClause LIMIT $firstItem, $perPage";
 
 // 設置搜尋結果
 $searchResult = "";
@@ -83,21 +93,6 @@ if (!empty($search)) {
 $result = $conn->query($sql);
 $rows = $result->fetch_all(MYSQLI_ASSOC);
 $courseCount = $result->num_rows;
-
-if (isset($_GET["category"])) {
-    $category_id = $_GET["category"];
-    $sql = "SELECT course.*, course_category.name AS category_name FROM course 
-    JOIN course_category ON course.course_category_id = course_category.id
-    WHERE course.course_category_id = $category_id
-    ORDER BY course.id ASC";
-
-    $pageTitle = $categoryArr[$category_id] . "課程列表";
-} else {
-    $sql = "SELECT course.*, course_category.name AS category_name FROM course 
-    JOIN course_category ON course.course_category_id = course_category.id
-    ORDER BY course.id ASC";
-}
-
 
 
 // 獲取符合條件的總數量以進行分頁
@@ -218,7 +213,7 @@ $pageCount = ceil($allCourseCount / $perPage);
                                 <td><?= $course["course_name"] ?></td>
                                 <td><?= $course["course_category_id"] ?></td>
                                 <td>
-                                    <img src="/mjphp/images/<?= $course_category["name"] ?>" alt="images" class="img-thumbnail" style="max-width: 100px;">
+                                    <img src="/mjphp/images/<?= $course["category_name"] ?>/<?= $course["images"]?>" alt="images" class="img-thumbnail" style="max-width: 100px;">
                                 </td>
                                 <td class="text-end"><?= $course["price"] ?></td>
                                 <td class="text-end"><?= $course["on_datetime"] ?></td>

@@ -80,7 +80,7 @@
                         <input type="file" class="form-control" id="file" name="file" required>
                     </div>
                     <button type="submit" class="btn btn-info">送出</button>
-                </form>
+                
             </div>
 
             <div class="col-lg-8">
@@ -110,6 +110,7 @@
                     </div>
                 </div>
             </div>
+            </form>
         </div>
     </div>
 
