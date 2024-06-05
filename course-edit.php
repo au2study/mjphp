@@ -68,13 +68,13 @@ if ($result->num_rows > 0) {
                             <tr>
                                 <th>on_datetime</th>
                                 <td>
-                                    <input type="text" class="form-control" name="on_datetime" value="<?= $row["on_datetime"] ?>">
+                                    <input type="date" class="form-control" name="on_datetime" value="<?= $row["on_datetime"] ?>">
                                 </td>
                             </tr>
                             <tr>
                                 <th>offdatetime</th>
                                 <td>
-                                    <input type="text" class="form-control" name="off_datetime" value="<?= $row["off_datetime"] ?>">
+                                    <input type="date" class="form-control" name="off_datetime" value="<?= $row["off_datetime"] ?>">
                                 </td>
                             </tr>
 
