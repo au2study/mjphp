@@ -16,4 +16,4 @@ if ($conn->query($sql) === TRUE) {
     echo "刪除資料錯誤: " . $conn->error;
 }
 
-header("location: users_course.php");
+header("location: course-detail.php");

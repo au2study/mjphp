@@ -51,7 +51,7 @@ if ($result->num_rows > 0) {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <a href="course-delete.php?id=<?= $row["id"] ?>" class="btn btn-danger">確認</a>
+                    <a href="doDeleteCourse.php?id=<?= $row["id"] ?>" class="btn btn-danger">確認</a>
                 </div>
             </div>
         </div>
@@ -59,7 +59,7 @@ if ($result->num_rows > 0) {
     <div class="container">
     <h1 class="my-4">課程資訊</h1>
         <div class="py-2">
-            <a class="btn btn-primary" href="users_course2.php"><i class="fa-solid fa-arrow-left"></i> 回課程列表</a>
+            <a class="btn btn-primary" href="course-list.php"><i class="fa-solid fa-arrow-left"></i> 回課程列表</a>
         </div>
         <div class="row justify-content-center">
             <div class="col-lg-4">

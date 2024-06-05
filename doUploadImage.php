@@ -1,10 +1,10 @@
 <?php
 require_once("../db_connect_mj.php");
 
-if(!isset($_POST["course_name"])){
-    echo "請循正常管道進入此頁";
-    exit;
-}
+// if(!isset($_POST["course_name"])){
+//     echo "請循正常管道進入此頁";
+//     exit;
+// }
 
 
 
@@ -76,4 +76,4 @@ if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
 // }
 
 $conn->close();
-header("location: course-upload2.php");
+header("location: course-list.php");

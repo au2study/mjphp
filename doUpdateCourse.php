@@ -18,7 +18,7 @@ $sql="UPDATE course SET course_name='$course_name', price='$price', on_datetime=
 
 if ($conn->query($sql) === TRUE) {
     echo "更新成功";
-    header("location: users_course2.php");
+    header("location: course-list.php");
 } else {
     echo "更新資料錯誤: " . $conn->error;
 }

@@ -39,7 +39,7 @@ if ($result->num_rows > 0) {
     <div class="container">
     <h1 class="my-4">編輯課程</h1>
         <div class="py-2">
-            <a class="btn btn-primary" href="users_course2.php?id=<?= $id ?>"><i class="fa-solid fa-arrow-left"></i>回課程列表</a>
+            <a class="btn btn-primary" href="course-list.php?id=<?= $id ?>"><i class="fa-solid fa-arrow-left"></i>回課程列表</a>
         </div>
         <div class="row justify-content-center">
             <div class="col-lg-4">
@@ -83,7 +83,7 @@ if ($result->num_rows > 0) {
                         <h1>課程不存在</h1>
                     <?php endif; ?>
                     <button class="btn btn-primary" type="submit">送出</button>
-                    <a class="btn btn-secondary" href="user_course.php">back <i class="fa-solid fa-arrow-left"></i></a>
+                    <a class="btn btn-secondary" href="course-detail.php">back <i class="fa-solid fa-arrow-left"></i></a>
                     </form>
             </div>
         </div>

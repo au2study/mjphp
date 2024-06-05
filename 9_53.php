@@ -199,5 +199,13 @@ else if ((isset($_GET["min"]) && $_GET["min"] !== '') || (isset($_GET["max"]) &&
 
 <a href="user_course.php?id=<?= $course["id"] ?>" class="btn btn-secondary">返回</a>
 
+<?php
+require_once("../db_connect_mj.php");
+$sql = "SELECT * FROM images ORDER BY id DESC";
+$result = $conn->query($sql);
+$rows = $result->fetch_all(MYSQLI_ASSOC);
+
+?>
+
 </body>
 </html>

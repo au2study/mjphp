@@ -64,6 +64,18 @@ $orderClause = $orderOptions[$order] ?? $orderOptions[1];
 
 $sql = "SELECT * FROM course $whereClause $orderClause LIMIT $firstItem, $perPage";
 
+// 設置搜尋結果
+$searchResult = "";
+
+if (!empty($on_datetime) && !empty($off_datetime)) {
+    $searchResult .= "日期在 $on_datetime ~ $off_datetime 之間";
+}
+if (!empty($maxValue) && !empty($minValue)) {
+    $searchResult .= ($searchResult ? ', ' : '') . "價格在 $minValue ~ $maxValue 元";
+}
+if (!empty($search)) {
+    $searchResult .= ($searchResult ? ', ' : '') . "$search 的搜尋結果";
+}
 
 
 // 獲取查詢結果
@@ -106,11 +118,11 @@ $pageCount = ceil($allCourseCount / $perPage);
         <div class="d-flex justify-content-between align-items-center my-3">
             <div>
                 <?php if (isset($_GET["search"]) || isset($_GET["on_datetime"]) || isset($_GET["off_datetime"]) || isset($_GET["minValue"]) || isset($_GET["maxValue"])) : ?>
-                    <a class="btn btn-primary" href="users_course2.php"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+                    <a class="btn btn-primary" href="course-list.php"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
                 <?php endif; ?>
             </div>
 
-            <a class="btn btn-success" href="course-upload2.php"><i class="fa-solid fa-file-circle-plus"></i> 新增課程</a>
+            <a class="btn btn-success" href="course-create.php"><i class="fa-solid fa-file-circle-plus"></i> 新增課程</a>
         </div>
 
         <div class="card mb-3">
@@ -165,8 +177,7 @@ $pageCount = ceil($allCourseCount / $perPage);
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="ps-3"><?= "共 $allCourseCount 堂課程" ?></div>
-
+            <div class="ps-3"><?=  " $searchResult  共 $allCourseCount 堂課程" ?></div>
         </div>
 
         <?php if ($courseCount  > 0) : ?>
@@ -197,7 +208,7 @@ $pageCount = ceil($allCourseCount / $perPage);
                                 <td class="text-end"><?= $course["on_datetime"] ?></td>
                                 <td class="text-end"><?= $course["off_datetime"] ?></td>
                                 <td>
-                                    <a href="user_course.php?id=<?= $course["id"] ?>" class="btn btn-warning"><i class="fa-solid fa-eye"></i> 查看</a>
+                                    <a href="course-detail.php?id=<?= $course["id"] ?>" class="btn btn-warning"><i class="fa-solid fa-eye"></i> 查看</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
