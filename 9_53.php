@@ -97,9 +97,36 @@ $now=date("Y-m-d);
     <span class="text-danger">下架中</span>
 <?php endif; ?>
 
-<li class="page-item <?php if ($i == $page) echo "active"; ?>">
-                                    <a class="page-link" href="?page=<?= $i ?>&order=<?php if(isset($order) echo $order)?>&on_datetime=<?php if(isset($on_datetime) echo on_datetime)?>&off_datetime=<?php if(isset($off_datetime) echo off_datetime)?>&maxValue=<?php if(isset($maxValue)echo maxValue) ?>&minValue=<?php if(isset($minValue)echo $minValue) ?>&search=<?php if(isset($search)echo search) ?>&category_id=<? ?>"><?= $i ?></a>
-                                </li>
+
+<tr>
+                                <th>course_category_id</th>
+                                <td>
+                                    <select id="course_category_id" name="course_category_id" value="<?= $row["course_category_id"] ?> class=" form-select" required>
+                                        <option value="1">1: Gomoku</option>
+                                        <option value="2">2: Mahjong</option>
+                                        <option value="3">3: Go</option>
+                                        <option value="4">4: Chess</option>
+                                        <option value="5">5: Shogi</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>images</th>
+                                <td>
+                                    <input type="file" class="form-control" name="images" value="<?= $row["images"] ?>" accept="image/*" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>file</th>
+                                <td>
+                                    <input type="file" class="form-control" name="file" value="<?= $row["file"] ?>" accept="video/*" required>
+                                </td>
+                            </tr>
+
+value="<?= $row["course_category_id"] ?> 
+value="<?= $row["images"] ?>" accept="image/*" required
+value="<?= $row["file"] ?>" accept="video/*
+
 
 </body>
 </html>

@@ -35,9 +35,9 @@ if ($result->num_rows > 0) {
 </head>
 
 <body>
-    
+
     <div class="container">
-    <h1 class="my-4">編輯課程</h1>
+        <h1 class="my-4">編輯課程</h1>
         <div class="py-2">
             <a class="btn btn-primary" href="course-list.php?id=<?= $id ?>"><i class="fa-solid fa-arrow-left"></i>回課程列表</a>
         </div>
@@ -60,6 +60,30 @@ if ($result->num_rows > 0) {
                                 </td>
                             </tr>
                             <tr>
+                                <th>course_category_id</th>
+                                <td>
+                                    <select id="course_category_id" name="course_category_id" value="<?= $row["course_category_id"] ?> class=" form-select" required>
+                                        <option value="1">1: Gomoku</option>
+                                        <option value="2">2: Mahjong</option>
+                                        <option value="3">3: Go</option>
+                                        <option value="4">4: Chess</option>
+                                        <option value="5">5: Shogi</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>images</th>
+                                <td>
+                                    <input type="file" class="form-control" name="images" value="<?= $row["images"] ?>" accept="image/*" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>file</th>
+                                <td>
+                                    <input type="file" class="form-control" name="file" value="<?= $row["file"] ?>" accept="video/*" required>
+                                </td>
+                            </tr>
+                            <tr>
                                 <th>price</th>
                                 <td>
                                     <input type="text" class="form-control" name="price" value="<?= $row["price"] ?>">
@@ -72,7 +96,7 @@ if ($result->num_rows > 0) {
                                 </td>
                             </tr>
                             <tr>
-                                <th>offdatetime</th>
+                                <th>off_datetime</th>
                                 <td>
                                     <input type="date" class="form-control" name="off_datetime" value="<?= $row["off_datetime"] ?>">
                                 </td>
@@ -90,7 +114,7 @@ if ($result->num_rows > 0) {
 
     </div>
 
-    
+
 </body>
 
 </html>
