@@ -97,5 +97,9 @@ $now=date("Y-m-d);
     <span class="text-danger">下架中</span>
 <?php endif; ?>
 
+<li class="page-item <?php if ($i == $page) echo "active"; ?>">
+                                    <a class="page-link" href="?page=<?= $i ?>&order=<?php if(isset($order) echo $order)?>&on_datetime=<?php if(isset($on_datetime) echo on_datetime)?>&off_datetime=<?php if(isset($off_datetime) echo off_datetime)?>&maxValue=<?php if(isset($maxValue)echo maxValue) ?>&minValue=<?php if(isset($minValue)echo $minValue) ?>&search=<?php if(isset($search)echo search) ?>&category_id=<? ?>"><?= $i ?></a>
+                                </li>
+
 </body>
 </html>

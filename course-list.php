@@ -16,7 +16,7 @@ foreach ($cateRows as $cate) {
 // 初始變數設置
 
 $pageTitle = "課程列表";
-$perPage = 5;
+$perPage = 10;
 $on_datetime = isset($_GET["on_datetime"]) ? $_GET["on_datetime"] : '';
 $off_datetime = isset($_GET["off_datetime"]) ? $_GET["off_datetime"] : '';
 $minValue = isset($_GET["minValue"]) && $_GET["minValue"] !== '0' ? $_GET["minValue"] : '';
@@ -188,7 +188,7 @@ $pageCount = ceil($allCourseCount / $perPage);
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="ps-3"><?=  " $searchResult  共 $allCourseCount 堂課程" ?></div>
+            <div class="ps-3"><?= " $searchResult  共 $allCourseCount 堂課程" ?></div>
         </div>
 
         <?php if ($courseCount  > 0) : ?>
@@ -213,7 +213,7 @@ $pageCount = ceil($allCourseCount / $perPage);
                                 <td><?= $course["course_name"] ?></td>
                                 <td><?= $course["course_category_id"] ?></td>
                                 <td>
-                                    <img src="/mjphp/images/<?= $course["category_name"] ?>/<?= $course["images"]?>" alt="images" class="img-thumbnail" style="max-width: 100px;">
+                                    <img src="/mjphp/images/<?= $course["category_name"] ?>/<?= $course["images"] ?>" alt="images" class="img-thumbnail" style="max-width: 100px;">
                                 </td>
                                 <td class="text-end"><?= $course["price"] ?></td>
                                 <td class="text-end"><?= $course["on_datetime"] ?></td>
@@ -233,7 +233,7 @@ $pageCount = ceil($allCourseCount / $perPage);
                         <ul class="pagination justify-content-center">
                             <?php for ($i = 1; $i <= $pageCount; $i++) : ?>
                                 <li class="page-item <?php if ($i == $page) echo "active"; ?>">
-                                    <a class="page-link" href="?page=<?= $i ?>&order=<?= $order ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>&category_id=<?= $category_id ?>"><?= $i ?></a>
+                                    <a class="page-link" href="?page=<?= $i ?>&order=<?php if (isset($order)) echo $order ?>&on_datetime=<?php if (isset($on_datetime)) echo $on_datetime ?>&off_datetime=<?php if (isset($off_datetime)) echo $off_datetime ?>&maxValue=<?php if (isset($maxValue)) echo $maxValue ?>&minValue=<?php if (isset($minValue)) echo $minValue ?>&search=<?php if (isset($search)) echo $search ?>&category=<?php if (isset($category_id)) echo $category_id ?>"><?= $i ?></a>
                                 </li>
                             <?php endfor; ?>
                         </ul>
