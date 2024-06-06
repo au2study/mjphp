@@ -13,6 +13,8 @@ foreach ($cateRows as $cate) {
     $categoryArr[$cate["id"]] = $cate["name"];
 }
 
+
+
 // 初始變數設置
 
 $pageTitle = "課程列表";
@@ -25,11 +27,13 @@ $search = isset($_GET["search"]) ? $_GET["search"] : '';
 $page = isset($_GET["page"]) ? (int)$_GET["page"] : 1;
 $order = isset($_GET["order"]) ? (int)$_GET["order"] : 1;
 $firstItem = ($page - 1) * $perPage;
-$allCourseCount = 0;
+
+
+
+
 
 // 建立 WHERE 子句
-
-$whereClause = "WHERE valid = 1";
+$whereClause = " WHERE valid = 1 ";
 if (!empty($on_datetime) && !empty($off_datetime)) {
     $whereClause .= " AND on_datetime >= '$on_datetime' AND off_datetime <= '$off_datetime'";
 }
@@ -46,33 +50,37 @@ if (!empty($search)) {
 // 設置排序選項
 
 $orderOptions = [
-    1 => "ORDER BY id DESC",
-    2 => "ORDER BY id ASC",
-    3 => "ORDER BY course_name DESC",
-    4 => "ORDER BY course_name ASC",
-    5 => "ORDER BY price DESC",
-    6 => "ORDER BY price ASC",
-    7 => "ORDER BY on_datetime DESC",
-    8 => "ORDER BY on_datetime ASC",
-    9 => "ORDER BY off_datetime DESC",
-    10 => "ORDER BY off_datetime ASC",
+    1 => " ORDER BY id DESC",
+    2 => " ORDER BY id ASC",
+    3 => " ORDER BY course_name DESC",
+    4 => " ORDER BY course_name ASC",
+    5 => " ORDER BY price DESC",
+    6 => " ORDER BY price ASC",
+    7 => " ORDER BY on_datetime DESC",
+    8 => " ORDER BY on_datetime ASC",
+    9 => " ORDER BY off_datetime DESC",
+    10 => " ORDER BY off_datetime ASC",
 ];
 
 $orderClause = $orderOptions[$order] ?? $orderOptions[1];
 
 
+// 初始化 categoryClause
+$categoryClause = "";
 if (isset($_GET["category"])) {
     $category_id = $_GET["category"];
-    $categoryClause = "AND course.course_category_id = $category_id";
+    $categoryClause = " AND course.course_category_id = $category_id"; // 確保前面有空格
+    $pageTitle = isset($categoryArr[$category_id]) ? $categoryArr[$category_id] . "課程列表" : "課程列表";
+} 
 
-    $pageTitle = $categoryArr[$category_id] . "課程列表";
-} else {
-    $categoryClause = "";
-}
 // 建立查詢語句
-
-$sql = "SELECT course.*, course_category.name AS category_name FROM course 
-    JOIN course_category ON course.course_category_id = course_category.id  $whereClause $categoryClause $orderClause LIMIT $firstItem, $perPage";
+$sql = "SELECT course.*, course_category.name AS category_name 
+        FROM course 
+        JOIN course_category ON course.course_category_id = course_category.id 
+        $whereClause 
+        $categoryClause 
+        $orderClause 
+        LIMIT $firstItem, $perPage";
 
 // 設置搜尋結果
 $searchResult = "";
@@ -96,8 +104,9 @@ $courseCount = $result->num_rows;
 
 
 // 獲取符合條件的總數量以進行分頁
-
+// 獲取符合條件的總數量以進行分頁
 $totalSql = "SELECT COUNT(*) AS total FROM course $whereClause $categoryClause";
+
 $totalResult = $conn->query($totalSql);
 $totalRow = $totalResult->fetch_assoc();
 $allCourseCount = $totalRow['total'];
@@ -161,6 +170,7 @@ $pageCount = ceil($allCourseCount / $perPage);
                             <input type="hidden" name="search" value="<?= $search ?>">
                             <input type="hidden" name="page" value="1">
                             <input type="hidden" name="order" value="<?= $order ?>">
+                            <input type="hidden" name="course_category" value="<?= $category_id ?>">
                             <button type="submit" class="btn btn-primary "><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                 </form>
@@ -191,18 +201,18 @@ $pageCount = ceil($allCourseCount / $perPage);
             <div class="ps-3"><?= " $searchResult  共 $allCourseCount 堂課程" ?></div>
         </div>
 
-        <?php if ($courseCount  > 0) : ?>
+        <?php if ($courseCount > 0) : ?>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover text-center">
                     <thead class="table-dark">
                         <tr>
-                            <th class="text-end">ID <a href="?page=<?= $page ?>&order=<?= ($order == 1) ? 2 : 1 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
-                            <th>課程名稱 <a href="?page=<?= $page ?>&order=<?= ($order == 3) ? 4 : 3 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
+                            <th class="text-end">ID <a href="?page=<?= $page ?>&order=<?= ($order == 1) ? 2 : 1 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>&course_category=<?= $category_id ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
+                            <th>課程名稱 <a href="?page=<?= $page ?>&order=<?= ($order == 3) ? 4 : 3 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>&course_category=<?= $category_id ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
                             <th>分類ID </th>
                             <th>圖片</th>
-                            <th class="text-end">價格 <a href="?page=<?= $page ?>&order=<?= ($order == 5) ? 6 : 5 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
-                            <th class="text-end">上架日期 <a href="?page=<?= $page ?>&order=<?= ($order == 7) ? 8 : 7 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
-                            <th class="text-end">下架日期 <a href="?page=<?= $page ?>&order=<?= ($order == 9) ? 10 : 9 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
+                            <th class="text-end">價格 <a href="?page=<?= $page ?>&order=<?= ($order == 5) ? 6 : 5 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>&course_category=<?= $category_id ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
+                            <th class="text-end">上架日期 <a href="?page=<?= $page ?>&order=<?= ($order == 7) ? 8 : 7 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>&course_category=<?= $category_id ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
+                            <th class="text-end">下架日期 <a href="?page=<?= $page ?>&order=<?= ($order == 9) ? 10 : 9 ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>&course_category=<?= $category_id ?>" class="sort-icon text-white"><i class="fa-solid fa-sort"></i></a></th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -228,12 +238,12 @@ $pageCount = ceil($allCourseCount / $perPage);
             </div>
 
             <div class="d-flex justify-content-center">
-                <?php if ($pageCount >= 1) : ?>
+            <?php if ($pageCount >= 1) : ?>
                     <nav aria-label="Page navigation">
                         <ul class="pagination justify-content-center">
                             <?php for ($i = 1; $i <= $pageCount; $i++) : ?>
                                 <li class="page-item <?php if ($i == $page) echo "active"; ?>">
-                                    <a class="page-link" href="?page=<?= $i ?>&order=<?php if (isset($order)) echo $order ?>&on_datetime=<?php if (isset($on_datetime)) echo $on_datetime ?>&off_datetime=<?php if (isset($off_datetime)) echo $off_datetime ?>&maxValue=<?php if (isset($maxValue)) echo $maxValue ?>&minValue=<?php if (isset($minValue)) echo $minValue ?>&search=<?php if (isset($search)) echo $search ?>&category=<?php if (isset($category_id)) echo $category_id ?>"><?= $i ?></a>
+                                    <a class="page-link" href="?page=<?= $i ?>&order=<?php if (isset($order)) echo $order ?>&on_datetime=<?php if (isset($on_datetime)) echo $on_datetime ?>&off_datetime=<?php if (isset($off_datetime)) echo $off_datetime ?>&maxValue=<?php if (isset($maxValue)) echo $maxValue ?>&minValue=<?php if (isset($minValue)) echo $minValue ?>&search=<?php if (isset($search)) echo $search ?>&course_category=<?php if (isset($category_id)) echo $category_id ?>"><?= $i ?></a>
                                 </li>
                             <?php endfor; ?>
                         </ul>
