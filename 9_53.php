@@ -92,5 +92,10 @@ $image = $_FILES["image"];
         }
     } -->
 
+$now=date("Y-m-d);
+<?php if($off_datetime < $now) : ?>
+    <span class="text-danger">下架中</span>
+<?php endif; ?>
+
 </body>
 </html>

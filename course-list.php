@@ -97,7 +97,7 @@ $courseCount = $result->num_rows;
 
 // 獲取符合條件的總數量以進行分頁
 
-$totalSql = "SELECT COUNT(*) AS total FROM course $whereClause";
+$totalSql = "SELECT COUNT(*) AS total FROM course $whereClause $categoryClause";
 $totalResult = $conn->query($totalSql);
 $totalRow = $totalResult->fetch_assoc();
 $allCourseCount = $totalRow['total'];
@@ -233,7 +233,7 @@ $pageCount = ceil($allCourseCount / $perPage);
                         <ul class="pagination justify-content-center">
                             <?php for ($i = 1; $i <= $pageCount; $i++) : ?>
                                 <li class="page-item <?php if ($i == $page) echo "active"; ?>">
-                                    <a class="page-link" href="?page=<?= $i ?>&order=<?= $order ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>"><?= $i ?></a>
+                                    <a class="page-link" href="?page=<?= $i ?>&order=<?= $order ?>&on_datetime=<?= $on_datetime ?>&off_datetime=<?= $off_datetime ?>&maxValue=<?= $maxValue ?>&minValue=<?= $minValue ?>&search=<?= $search ?>&category_id=<?= $category_id ?>"><?= $i ?></a>
                                 </li>
                             <?php endfor; ?>
                         </ul>
