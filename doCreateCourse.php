@@ -65,6 +65,7 @@ $rowCate=$resultCate->fetch_assoc();
 
     if (move_uploaded_file($file["tmp_name"], $uploaded_file) && move_uploaded_file($image["tmp_name"], $uploaded_image)) {
         echo "檔案和圖片上傳成功，新資料輸入成功，id 為 $last_id";
+        header("location: course-list.php");
     } else {
         echo "檔案或圖片上傳失敗";
     }
@@ -76,6 +77,6 @@ $rowCate=$resultCate->fetch_assoc();
 $stmt->close();
 $conn->close();
 
-// header("location: course-list.php");
+
 exit(); // 添加 exit 確保 header 重定向正常執行
 ?>
