@@ -21,6 +21,15 @@ if ($result->num_rows > 0) {
     $title = "課程不存在";
 }
 
+$sqlCategory = "SELECT course.*, course_category.name AS category_name 
+        FROM course 
+        JOIN course_category ON course.course_category_id = course_category.id
+        WHERE course.id = $id AND course.valid=1";
+
+$resultCategory = $conn->query($sqlCategory);
+$rowsCategory = $resultCategory->fetch_all(MYSQLI_ASSOC);
+$categoryCount = $resultCategory->num_rows;
+
 // $courseExit=true;
 // if($result->num_rows==0){$courseExit=false;}
 // var_dump($row);
@@ -74,8 +83,8 @@ if ($result->num_rows > 0) {
                             <td><?= $row["course_name"] ?></td>
                         </tr>
                         <tr>
-                            <th>course_category_id</th>
-                            <td><?= $row["course_category_id"] ?></td>
+                            <th>category_name</th>
+                            <td><?= $rowsCategory[0]["category_name"] ?></td>
                         </tr>
                         <tr>
                             <th>images</th>
