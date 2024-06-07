@@ -74,6 +74,18 @@ if ($result->num_rows > 0) {
                             <td><?= $row["course_name"] ?></td>
                         </tr>
                         <tr>
+                            <th>course_category_id</th>
+                            <td><?= $row["course_category_id"] ?></td>
+                        </tr>
+                        <tr>
+                            <th>images</th>
+                            <td><?= $row["images"] ?></td>
+                        </tr>
+                        <tr>
+                            <th>file</th>
+                            <td><?= $row["file"] ?></td>
+                        </tr>
+                        <tr>
                             <th>price</th>
                             <td><?= $row["price"] ?></td>
                         </tr>

@@ -219,7 +219,10 @@ $pageCount = ceil($allCourseCount / $perPage);
                                     <i class="fa-solid fa-sort"></i>
                                 </a>
                             </th>
-                            <th>分類ID </th>
+                            <th>棋種
+                                <a href="?page=<?= $page ?>&on_datetime=<?php if (isset($on_datetime)) echo $on_datetime ?>&off_datetime=<?php if (isset($off_datetime)) echo $off_datetime ?>&maxValue=<?php if (isset($maxValue)) echo $maxValue ?>&minValue=<?php if (isset($minValue)) echo $minValue ?>&search=<?php if (isset($search)) echo $search ?>&category=<?php if (isset($category_id)) echo $category_id ?>" class="sort-icon text-white">
+                                </a>
+                            </th>
                             <th>圖片</th>
                             <th class="text-end">價格
                                 <a href="?page=<?= $page ?>&order=<?= ($order == 5) ? 6 : 5 ?>&on_datetime=<?php if (isset($on_datetime)) echo $on_datetime ?>&off_datetime=<?php if (isset($off_datetime)) echo $off_datetime ?>&maxValue=<?php if (isset($maxValue)) echo $maxValue ?>&minValue=<?php if (isset($minValue)) echo $minValue ?>&search=<?php if (isset($search)) echo $search ?>&category=<?php if (isset($category_id)) echo $category_id ?>" class="sort-icon text-white">
@@ -243,17 +246,17 @@ $pageCount = ceil($allCourseCount / $perPage);
                     <tbody>
                         <?php foreach ($rows as $course) : ?>
                             <tr>
-                                <td class="text-end"><?= $course["id"] ?></td>
-                                <td><?= $course["course_name"] ?></td>
-                                <td><?= $course["course_category_id"] ?></td>
+                                <td class="text-end"><?= isset($course["id"]) ? $course["id"] : '' ?></td>
+                                <td><?= isset($course["course_name"]) ? $course["course_name"] : '' ?></td>
+                                <td><?= isset($course["category_name"]) ? $course["category_name"] : '' ?></td>
                                 <td>
-                                    <img src="/mjphp/images/<?= $course["category_name"] ?>/<?= $course["images"] ?>" alt="images" class="img-thumbnail" style="max-width: 100px;">
+                                    <img src="/mjphp/images/<?= isset($course["category_name"]) ? $course["category_name"] : '' ?>/<?= isset($course["images"]) ? $course["images"] : '' ?>" alt="images" class="img-thumbnail" style="max-width: 100px;">
                                 </td>
-                                <td class="text-end"><?= $course["price"] ?></td>
-                                <td class="text-end"><?= $course["on_datetime"] ?></td>
-                                <td class="text-end"><?= $course["off_datetime"] ?></td>
+                                <td class="text-end"><?= isset($course["price"]) ? $course["price"] : '' ?></td>
+                                <td class="text-end"><?= isset($course["on_datetime"]) ? $course["on_datetime"] : '' ?></td>
+                                <td class="text-end"><?= isset($course["off_datetime"]) ? $course["off_datetime"] : '' ?></td>
                                 <td>
-                                    <a href="course-detail.php?id=<?= $course["id"] ?>" class="btn btn-warning"><i class="fa-solid fa-eye"></i> 查看</a>
+                                    <a href="course-detail.php?id=<?= isset($course["id"]) ? $course["id"] : '' ?>" class="btn btn-warning"><i class="fa-solid fa-eye"></i> 查看</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
