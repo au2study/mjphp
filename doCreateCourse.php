@@ -44,14 +44,14 @@ $stmt->bind_param("ssssssss", $course_name, $price, $course_category_id, $on_dat
 if ($stmt->execute()) {
     $last_id = $conn->insert_id;
 
-$sqlCate ="SELECT course.*, course_category.name AS category_name FROM course 
-JOIN course_category ON course.course_category_id = $course_category_id";
-$resultCate = $conn->query($sqlCate);
-$rowCate=$resultCate->fetch_assoc();
+    $sqlCate = "SELECT * FROM course_category WHERE id = $course_category_id";
+    $resultCate = $conn->query($sqlCate);
+    $rowCate = $resultCate->fetch_assoc();
+    print_r($rowCate["name"]);
 
     // 如果目錄不存在則創建目錄
-    $video_directory = "../mjphp/videos/" . $rowCate["category_name"];
-    $image_directory = "../mjphp/images/". $rowCate["category_name"];
+    $video_directory = "../mjphp/video/" . $rowCate["name"];
+    $image_directory = "../mjphp/images/" . $rowCate["name"];
     if (!file_exists($video_directory)) {
         mkdir($video_directory, 0777, true); // 遞歸創建目錄
     }
@@ -79,5 +79,3 @@ $conn->close();
 
 
 exit(); // 添加 exit 確保 header 重定向正常執行
-?>
-
